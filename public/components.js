@@ -8,10 +8,14 @@ const App = React.createClass({
     this.state.items.push({item: item, status: 'active'});
     this.setState({items: this.state.items});
   },
+  deleteItem: function (i) {
+    this.state.items.splice(i, 1);
+    this.setState({items: this.state.items});
+  },
   render: function () {
     return <div>
       <Header addItem={this.addItem}/>
-      <Footer items={this.state.items}/>
+      <Footer items={this.state.items} deleteItem={this.deleteItem}/>
     </div>
   }
 });
@@ -42,7 +46,7 @@ const Footer = React.createClass({
   },
   render: function () {
     return <div>
-      <ItemsList items={this.state.items}/>
+      <ItemsList items={this.state.items} deleteItem={this.props.deleteItem}/>
       <button onClick={this.setAllItems}>all</button>
       <button>active</button>
       <button>completed</button>
@@ -52,13 +56,16 @@ const Footer = React.createClass({
 });
 
 const ItemsList = React.createClass({
+  remove: function (index) {
+    this.props.deleteItem(index);
+  },
   render: function () {
     const items = this.props.items.map((item, index)=> {
       return <div key={index}>
         <li>
           <input type="checkbox"/>
           {item.item}
-          <button>X</button>
+          <button onClick={this.remove.bind(this, index)}>X</button>
         </li>
       </div>
     });
