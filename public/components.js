@@ -12,10 +12,14 @@ const App = React.createClass({
     this.state.items.splice(i, 1);
     this.setState({items: this.state.items});
   },
+  addCompletedItem: function (i) {
+    this.state.items[i].status = 'completed';
+    this.setState({items: this.state.items});
+  },
   render: function () {
     return <div>
       <Header addItem={this.addItem}/>
-      <Footer items={this.state.items} deleteItem={this.deleteItem}/>
+      <Footer items={this.state.items} deleteItem={this.deleteItem} addCompletedItem={this.addCompletedItem}/>
     </div>
   }
 });
@@ -44,12 +48,18 @@ const Footer = React.createClass({
   setAllItems: function () {
     this.setState({items: this.props.items});
   },
+  setCompletedItems: function () {
+    const completed = this.state.items.filter(item => item.status === 'completed');
+    this.setState({items: completed});
+    console.log(this.state.items[0]);
+  },
   render: function () {
     return <div>
-      <ItemsList items={this.state.items} deleteItem={this.props.deleteItem}/>
+      <ItemsList items={this.state.items} deleteItem={this.props.deleteItem}
+                 addCompletedItem={this.props.addCompletedItem}/>
       <button onClick={this.setAllItems}>all</button>
-      <button>active</button>
-      <button>completed</button>
+      <button >active</button>
+      <button onClick={this.setCompletedItems}>completed</button>
       <button>clear all</button>
     </div>
   }
@@ -59,11 +69,17 @@ const ItemsList = React.createClass({
   remove: function (index) {
     this.props.deleteItem(index);
   },
+  addCompletedItem: function (index) {
+    const isChecked = $("[name='checkbox']").attr("checked", 'true');//全选
+    if (isChecked) {
+      this.props.addCompletedItem(index);
+    }
+  },
   render: function () {
     const items = this.props.items.map((item, index)=> {
       return <div key={index}>
         <li>
-          <input type="checkbox"/>
+          <input type="checkbox" name="checkbox" onChange={this.addCompletedItem.bind(this, index)}/>
           {item.item}
           <button onClick={this.remove.bind(this, index)}>X</button>
         </li>
