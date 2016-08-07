@@ -1,16 +1,20 @@
 const App = React.createClass({
   getInitialState(){
     return {
-      items: []
+      items: [],
+      toLoadItems: []
     }
   },
   addItem: function (item) {
     this.state.items.push({item: item, isDone: false});
     this.setState({items: this.state.items});
+    this.setState({toLoadItems: this.state.items});
   },
-  deleteItem: function (i) {
+  deleteItem: function (item) {
+    const items = this.state.items;
+    const i = items.indexOf(item);
     this.state.items.splice(i, 1);
-    this.setState({items: this.state.items});
+    this.setState({items});
   },
   changeStatus: function (item) {
     const items = this.state.items;
@@ -18,10 +22,28 @@ const App = React.createClass({
     this.state.items[i].isDone = !this.state.items[i].isDone;
     this.setState({items});
   },
+  getAllItems: function () {
+    this.setState({toLoadItems: this.state.items});
+  },
+  getCompletedItems: function () {
+    const completed = this.state.items.filter(item => item.isDone === true);
+    this.setState({toLoadItems: completed});
+  },
+  getActiveItems: function () {
+    const aciveItems = this.state.items.filter(item => item.isDone === false);
+    this.setState({toLoadItems: aciveItems});
+  },
+  clearCompleted: function () {
+    const items = this.state.items.filter(item => item.isDone === false);
+    this.setState({items});
+  },
   render: function () {
     return <div>
       <Header addItem={this.addItem}/>
-      <Footer items={this.state.items} deleteItem={this.deleteItem} changeStatus={this.changeStatus}/>
+      <Footer toLoadItems={this.state.toLoadItems} deleteItem={this.deleteItem} changeStatus={this.changeStatus}
+              getAllItems={this.getAllItems} getCompletedItems={this.getCompletedItems}
+              getActiveItems={this.getActiveItems}
+              clearCompleted={this.clearCompleted}/>
     </div>
   }
 });
@@ -42,32 +64,33 @@ const Header = React.createClass({
 });
 
 const Footer = React.createClass({
-  getInitialState(){
-    return {
-      items: []
-    }
+  getAllItems: function () {
+    this.props.getAllItems();
   },
-  setAllItems: function () {
-    this.setState({items: this.props.items});
+  getCompletedItems: function () {
+    this.props.getCompletedItems();
   },
-  setCompletedItems: function () {
-    const completed = this.state.items.filter(item => item.isDone === true);
-    this.setState({items: completed});
+  getActiveItems: function () {
+    this.props.getActiveItems();
+  },
+  clearCompleted: function () {
+    this.props.clearCompleted();
   },
   render: function () {
     return <div>
-      <ItemsList items={this.state.items} deleteItem={this.props.deleteItem} changeStatus={this.props.changeStatus}/>
-      <button onClick={this.setAllItems}>all</button>
-      <button >active</button>
-      <button onClick={this.setCompletedItems}>completed</button>
-      <button>clear all</button>
+      <ItemsList items={this.props.toLoadItems} deleteItem={this.props.deleteItem}
+                 changeStatus={this.props.changeStatus}/>
+      <button onClick={this.getAllItems}>all</button>
+      <button onClick={this.getActiveItems}>active</button>
+      <button onClick={this.getCompletedItems}>completed</button>
+      <button onClick={this.clearCompleted}>clear completed</button>
     </div>
   }
 });
 
 const ItemsList = React.createClass({
-  remove: function (index) {
-    this.props.deleteItem(index);
+  remove: function (item) {
+    this.props.deleteItem(item);
   },
   changeStatus: function (item) {
     this.props.changeStatus(item);
@@ -78,7 +101,7 @@ const ItemsList = React.createClass({
         <li>
           <input type="checkbox" onClick={this.changeStatus.bind(this, item)} checked={item.isDone}/>
           {item.item}
-          <button onClick={this.remove.bind(this, index)}>X</button>
+          <button onClick={this.remove.bind(this, item)}>X</button>
         </li>
       </div>
     });
