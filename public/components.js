@@ -58,6 +58,23 @@ const App = React.createClass({
       })
     })
   },
+  clearCompleted: function () {
+    const items = this.state.items.filter(item => item.isDone === false);
+    const completedItems = this.state.items.filter(item => item.isDone === true);
+    const indexes = completedItems.map((ele) => this.state.items.indexOf(ele));
+    this.setState({items});
+
+    // completedItems.forEach((item,i) => {
+      $.ajax('/item/i', {
+        method: 'DELETE',
+        contentType: 'application/json',
+        processData: false,
+        data: JSON.stringify({
+          indexes: indexes
+        })
+      })
+    // })
+  },
   getAllItems: function () {
     this.setState({toLoadItems: this.state.items});
   },
@@ -68,10 +85,6 @@ const App = React.createClass({
   getActiveItems: function () {
     const aciveItems = this.state.items.filter(item => item.isDone === false);
     this.setState({toLoadItems: aciveItems});
-  },
-  clearCompleted: function () {
-    const items = this.state.items.filter(item => item.isDone === false);
-    this.setState({items});
   },
   render: function () {
     return <div>
