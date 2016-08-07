@@ -37,6 +37,13 @@ const App = React.createClass({
     const items = this.state.items.filter(item => item.isDone === false);
     this.setState({items});
   },
+  componentDidMount: function () {
+    if (this.isMounted()) {
+      $.get('/', () => {
+        console.log('hello')
+      });
+    }
+  },
   render: function () {
     return <div>
       <Header addItem={this.addItem}/>
