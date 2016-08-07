@@ -34,12 +34,12 @@ const App = React.createClass({
     this.setState({items});
     this.setState({toLoadItems:this.state.items});
 
-    $.ajax('/item/i', {
+    $.ajax('/item', {
       method: 'DELETE',
       contentType: 'application/json',
       processData: false,
       data: JSON.stringify({
-        item: item
+        index:i
       })
     })
   },
@@ -48,6 +48,15 @@ const App = React.createClass({
     const i = items.indexOf(item);
     this.state.items[i].isDone = !this.state.items[i].isDone;
     this.setState({items});
+
+    $.ajax('/item', {
+      method: 'PUT',
+      contentType: 'application/json',
+      processData: false,
+      data: JSON.stringify({
+        item: item
+      })
+    })
   },
   getAllItems: function () {
     this.setState({toLoadItems: this.state.items});
