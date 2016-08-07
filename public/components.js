@@ -32,9 +32,7 @@ const App = React.createClass({
     const i = items.indexOf(item);
     this.state.items.splice(i, 1);
     this.setState({items});
-    const toLoadItems = this.state.toLoadItems;
-    toLoadItems.splice(toLoadItems.indexOf(item), 1);
-    this.setState({toLoadItems});
+    this.setState({toLoadItems:this.state.items});
 
     $.ajax('/item/i', {
       method: 'DELETE',
