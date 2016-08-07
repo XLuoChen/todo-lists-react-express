@@ -14,7 +14,9 @@ const App = React.createClass({
     }
   },
   addItem: function (item) {
-
+    this.state.items.push({item: item, isDone: false});
+    this.setState({items: this.state.items});
+    this.setState({toLoadItems: this.state.items});
     $.ajax('/item', {
       method: 'POST',
       contentType: 'application/json',
@@ -23,11 +25,6 @@ const App = React.createClass({
         name: item,
         isDone: false
       }),
-      success: function (item) {
-        this.state.items.push({item: item, isDone: false});
-        this.setState({items: this.state.items});
-        this.setState({toLoadItems: this.state.items});
-      }.bind(this)
     })
   },
   deleteItem: function (item) {
@@ -35,6 +32,18 @@ const App = React.createClass({
     const i = items.indexOf(item);
     this.state.items.splice(i, 1);
     this.setState({items});
+    const toLoadItems = this.state.toLoadItems;
+    toLoadItems.splice(toLoadItems.indexOf(item), 1);
+    this.setState({toLoadItems});
+
+    $.ajax('/item/i', {
+      method: 'DELETE',
+      contentType: 'application/json',
+      processData: false,
+      data: JSON.stringify({
+        item: item
+      })
+    })
   },
   changeStatus: function (item) {
     const items = this.state.items;
