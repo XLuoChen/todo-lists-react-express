@@ -5,10 +5,30 @@ const App = React.createClass({
       toLoadItems: []
     }
   },
+  componentDidMount: function () {
+    if (this.isMounted()) {
+      $.get('/items', (data) => {
+        this.setState({items: data});
+        console.log(this.state.items);
+      });
+    }
+  },
   addItem: function (item) {
-    this.state.items.push({item: item, isDone: false});
-    this.setState({items: this.state.items});
-    this.setState({toLoadItems: this.state.items});
+
+    $.ajax('/item', {
+      method: 'POST',
+      contentType: 'application/json',
+      processData: false,
+      data: JSON.stringify({
+        name: item,
+        isDone: false
+      }),
+      success: function (item) {
+        this.state.items.push({item: item, isDone: false});
+        this.setState({items: this.state.items});
+        this.setState({toLoadItems: this.state.items});
+      }.bind(this)
+    })
   },
   deleteItem: function (item) {
     const items = this.state.items;
@@ -36,13 +56,6 @@ const App = React.createClass({
   clearCompleted: function () {
     const items = this.state.items.filter(item => item.isDone === false);
     this.setState({items});
-  },
-  componentDidMount: function () {
-    if (this.isMounted()) {
-      $.get('/', () => {
-        console.log('hello')
-      });
-    }
   },
   render: function () {
     return <div>
