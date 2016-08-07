@@ -32,14 +32,14 @@ const App = React.createClass({
     const i = items.indexOf(item);
     this.state.items.splice(i, 1);
     this.setState({items});
-    this.setState({toLoadItems:this.state.items});
+    this.setState({toLoadItems: this.state.items});
 
     $.ajax('/item', {
       method: 'DELETE',
       contentType: 'application/json',
       processData: false,
       data: JSON.stringify({
-        index:i
+        index: i
       })
     })
   },
@@ -54,7 +54,7 @@ const App = React.createClass({
       contentType: 'application/json',
       processData: false,
       data: JSON.stringify({
-        item: item
+        index: i
       })
     })
   },
