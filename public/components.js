@@ -5,21 +5,23 @@ const App = React.createClass({
     }
   },
   addItem: function (item) {
-    this.state.items.push({item: item, status: 'active'});
+    this.state.items.push({item: item, isDone: false});
     this.setState({items: this.state.items});
   },
   deleteItem: function (i) {
     this.state.items.splice(i, 1);
     this.setState({items: this.state.items});
   },
-  addCompletedItem: function (i) {
-    this.state.items[i].status = 'completed';
-    this.setState({items: this.state.items});
+  changeStatus: function (item) {
+    const items = this.state.items;
+    const i = items.indexOf(item);
+    this.state.items[i].isDone = !this.state.items[i].isDone;
+    this.setState({items});
   },
   render: function () {
     return <div>
       <Header addItem={this.addItem}/>
-      <Footer items={this.state.items} deleteItem={this.deleteItem} addCompletedItem={this.addCompletedItem}/>
+      <Footer items={this.state.items} deleteItem={this.deleteItem} changeStatus={this.changeStatus}/>
     </div>
   }
 });
@@ -49,14 +51,12 @@ const Footer = React.createClass({
     this.setState({items: this.props.items});
   },
   setCompletedItems: function () {
-    const completed = this.state.items.filter(item => item.status === 'completed');
+    const completed = this.state.items.filter(item => item.isDone === true);
     this.setState({items: completed});
-    console.log(this.state.items[0]);
   },
   render: function () {
     return <div>
-      <ItemsList items={this.state.items} deleteItem={this.props.deleteItem}
-                 addCompletedItem={this.props.addCompletedItem}/>
+      <ItemsList items={this.state.items} deleteItem={this.props.deleteItem} changeStatus={this.props.changeStatus}/>
       <button onClick={this.setAllItems}>all</button>
       <button >active</button>
       <button onClick={this.setCompletedItems}>completed</button>
@@ -69,17 +69,14 @@ const ItemsList = React.createClass({
   remove: function (index) {
     this.props.deleteItem(index);
   },
-  addCompletedItem: function (index) {
-    const isChecked = $("[name='checkbox']").attr("checked", 'true');//全选
-    if (isChecked) {
-      this.props.addCompletedItem(index);
-    }
+  changeStatus: function (item) {
+    this.props.changeStatus(item);
   },
   render: function () {
     const items = this.props.items.map((item, index)=> {
       return <div key={index}>
         <li>
-          <input type="checkbox" name="checkbox" onChange={this.addCompletedItem.bind(this, index)}/>
+          <input type="checkbox" onClick={this.changeStatus.bind(this, item)} checked={item.isDone}/>
           {item.item}
           <button onClick={this.remove.bind(this, index)}>X</button>
         </li>
