@@ -40,7 +40,8 @@ const App = React.createClass({
   render: function () {
     return <div>
       <Header addItem={this.addItem}/>
-      <Footer toLoadItems={this.state.toLoadItems} deleteItem={this.deleteItem} changeStatus={this.changeStatus}
+      <Footer toLoadItems={this.state.toLoadItems} items={this.state.items}
+              deleteItem={this.deleteItem} changeStatus={this.changeStatus}
               getAllItems={this.getAllItems} getCompletedItems={this.getCompletedItems}
               getActiveItems={this.getActiveItems}
               clearCompleted={this.clearCompleted}/>
@@ -77,9 +78,11 @@ const Footer = React.createClass({
     this.props.clearCompleted();
   },
   render: function () {
+    const count = this.props.items.filter(item => item.isDone === false).length;
     return <div>
       <ItemsList items={this.props.toLoadItems} deleteItem={this.props.deleteItem}
                  changeStatus={this.props.changeStatus}/>
+      <p>{count} items left</p>
       <button onClick={this.getAllItems}>all</button>
       <button onClick={this.getActiveItems}>active</button>
       <button onClick={this.getCompletedItems}>completed</button>
