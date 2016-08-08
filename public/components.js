@@ -60,20 +60,13 @@ const App = React.createClass({
   },
   clearCompleted: function () {
     const items = this.state.items.filter(item => item.isDone === false);
-    const completedItems = this.state.items.filter(item => item.isDone === true);
-    const indexes = completedItems.map((ele) => this.state.items.indexOf(ele));
     this.setState({items});
 
-    // completedItems.forEach((item,i) => {
-      $.ajax('/item/i', {
-        method: 'DELETE',
-        contentType: 'application/json',
-        processData: false,
-        data: JSON.stringify({
-          indexes: indexes
-        })
-      })
-    // })
+    $.ajax('/doneItem', {
+      method: 'DELETE',
+      contentType: 'application/json',
+      processData: false,
+    });
   },
   getAllItems: function () {
     this.setState({toLoadItems: this.state.items});

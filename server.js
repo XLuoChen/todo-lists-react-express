@@ -56,18 +56,14 @@ app.put('/item', function (req, res) {
   });
 });
 
-app.delete('/item/i', function (req, res) {
+app.delete('/doneItem', function (req, res) {
   fs.readFile('./items.json', 'UTF-8', function (err, data) {
     if (err) return next(err);
 
-    const indexes = req.body.indexes;
     const items = JSON.parse(data);
-    console.log(indexes);
-    indexes.forEach(i => {
-      items.splice(i, 1);
-    });
+    const activeItems = items.filter(item => item.isDone === false);
 
-    fs.writeFile('./items.json', JSON.stringify(items));
+    fs.writeFile('./items.json', JSON.stringify(activeItems));
   });
 });
 
